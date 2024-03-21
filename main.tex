@@ -22,7 +22,7 @@
 % Packages
 \usepackage{scrhack}           % KomaScript compatibility hacks (e.g. for listing)
 \usepackage[utf8]{inputenc}    % Paket für Eingabekodierung 
-\usepackage[ngerman]{babel}    % Unterstützung für Deutsch (neue Rechtschreibung)
+
 \usepackage[T1]{fontenc}       % T1-kodierte Schriften, korrekte Trennmuster fuer Worte mit Umlauten
 %\usepackage{lmodern}		   % benutze Latin Modern als Standardschriftart
 \usepackage{mathptmx}		   % benutze Times als Standardschriftart
@@ -30,7 +30,7 @@
 \usepackage{ifpdf}		       % Parameter zur Erkennung des Kompilierungstyps
 \usepackage{listings}		   % Code einbinden
 \usepackage{microtype} 		   % unterbindet full boxes durch bessere Anpassung der Schrift 
-\usepackage{bibgerm}		   % Deutscher Biobliographiestil (geralpha)
+
 \usepackage{amssymb}		   % mathematische Symbole \mathbb{N} z.B.
 \usepackage{nomencl}		   % Abkürzungsverzeichnis
 \usepackage{xspace}		       % Leerzeichenproblem bei Commands lösen
@@ -93,9 +93,9 @@
 
 % Einstellungs für Abkürzungsverzeichnis
 \let\abk\nomenclature					% Befehl umbenennen in abk
-\renewcommand{\nomname}{Abkürzungsverzeichnis}
 \setlength{\nomlabelwidth}{.20\hsize}			% Punkte zw. Abkürzung und Erklärung
 \renewcommand{\nomlabel}[1]{#1 \dotfill}
+\renewcommand*\contentsname{Content}
 \setlength{\nomitemsep}{-\parsep}			% Zeilenabstände verkleinern
 \makenomenclature
 
@@ -104,17 +104,17 @@
 % \newcommand{\contentspacing}{\singlespacing}
 
 % settings
-\newcommand{\bitAuthor}{Max Mustermann}
-\newcommand{\bitTitle}{Dies ist der Titel der Bachelor- Master- oder Diplomarbeit, extra lang für zwei oder mehr Zeilen}
-\newcommand{\bitType}{Bachelorarbeit}
-\newcommand{\bitZweitbetreuer}{Zweitbetreuer}
+\newcommand{\bitAuthor}{Anton Wagner}
+\newcommand{\bitTitle}{Predicting Gaussians: 3D Scene Reconstruction using Transformers}
+\newcommand{\bitType}{Bachelorthesis}
+\newcommand{\bitZweitbetreuer}{Second Assessor:}
 % 
 % Es ist EIN Zweitbetreuer anzugeben!
 % bspw.
 % Betreuer in der Firma
 % M.Sc. Melanie Windrich
 % ...
-\newcommand{\bitDeadline}{März 2019}
+\newcommand{\bitDeadline}{März 2024}
 \newcommand{\bitKeywords}{Some key words}
 
 \hypersetup{
@@ -173,21 +173,18 @@
 % ---------------------- Dokument jetzt wirklich --------------------------
 % Titelblatt
 \input{title}			% Deckblatt
-\listoftodos 			% Zeige Todoanweisungen auf 2. Seite
 \clearpage{\pagestyle{empty}\cleardoublepage}
  
 % ---------------------------Abstract-------------------------------------
 \contentspacing
 \input{Content/summary}		% Abstract deutsch
 \clearpage{\pagestyle{empty}\cleardoublepage}
-\input{Content/abstract}	% Abstract englisch
-\clearpage{\pagestyle{empty}\cleardoublepage}
 
 % ---------------------------Inhaltsverzeichnisse--------------------------
 \singlespacing
-\tableofcontents		% Inhaltsverzeichnis
-% \addcontentsline{toc}{chapter}{Inhaltsverzeichnis}
-\addtocontents{toc}{\protect\addcontentsline{toc}{chapter}{Inhaltsverzeichnis}}
+\tableofcontents		% Table of Contents
+% \addcontentsline{toc}{chapter}{Table of Contents}
+\addtocontents{toc}{\protect\addcontentsline{toc}{chapter}{Table of Contents}}
 \contentspacing
 
 % ---------------------------Hauptteil--------------------------------------
