@@ -1,11 +1,6 @@
 
 \chapter{Related Works}
-
-This Chapter will discuss the origins and inspirations for different components of the final network, as well as other works that use 3D Gaussian Splatting. Relevant sources will be:
-\cite{kerbl3Dgaussians}
-\cite{zou2023triplane}
-\cite{yu2021pointbert}
-\cite{yu2021pointr}
+This work builds ontop of the 3D-Gaussian Splatting for Radiance Field Rendering Paper \cite{kerbl3Dgaussians}. Following existing point cloud transformers \cite{yu2021pointbert, \cite{yu2021pointr}} it uses a 
 
 
 I will also mention the similarity to vision transformers such as:
@@ -13,21 +8,52 @@ I will also mention the similarity to vision transformers such as:
 \cite{yu2021diverse}
 \cite{Miao2024}
 
-
 \chapter{Introduction}
-This chapter will explain 3D Gaussians and their ability for novel HD view synthesis at high framerates \cite{kerbl3Dgaussians}
-It will also give a preliminary explanation as to why i chose a transformer architecture. \cite{vaswani2023attention}
-
+While there are existing techniques for completing and reconstructing incomplete 3D point clouds, these only focus on the underlying geometry \cite{dai2020sgnn, song2016ssc, roldao20213d, yu2021pointr, yu2021pointbert}. Meanwhile vision transformers have shown great results in 2D image inpainting tasks \cite{Miao2024, yu2021diverse}. This thesis bridges the gap between these two fields by proposing a network that completes an incomplete point cloud geometry while filling in the missing visual information at the same time. This is done by directly predicting 3D-Gaussians. 3D-Gaussians are a sparse volumetric rendering method, by sampling points along rays a pixel value is calculated by using the properties of the Gaussians along the ray.\cite{article, kerbl3Dgaussians} So by predicting a Gaussians as whole it becomes possible to simultaneously complete the missing geometries and visuals for a scene.
+\begin{figure}[h]
+\centering % zentriert alles in der Figure
+\includegraphics[width=0.262\linewidth]{Images/Chapter/A Gaussian.pdf} % externe Grafik laden
+\includegraphics[width=0.4\linewidth]{Images/Chapter/chair.pdf}
+\caption{A single Gaussian (left). Multiple Gaussians creating the image of a chair (right)}\label{fig:gaussians}
+\end{figure}\\
 \section{Motivation}
-[An Image showing a hole in an otherwise good Scene]\\
-This section will highlight the large interest being shown towards gaussians and will explain how gaussian scenes end up with holes that need to be fixed.
-
+Optimizing a 3D-Gaussian Model begins by taking pictures from different positions with different camera angles. A structure from motion (SfM) program, such as Colmap \cite{schoenberger2016mvs, schoenberger2016sfm}, is then used to extract image features and place these features in a 3D space by matching the same features visible in different images. During this process the original camera positions and angles are recovered aswell \ref{fig:colmap}.\\
+\begin{figure}[h]
+\centering % zentriert alles in der Figure
+\includegraphics[width=0.6\linewidth]{Images/Chapter/colmap.pdf} % externe Grafik laden
+\caption{A scene reconstruction in Colmap}\label{fig:colmap}
+Cameras shown in red, features places in space.
+\end{figure}
+A sparse 3D-Gaussian Model is initialized using the extracted features and is then optimized using the original images as targets.
+When viewing the resulting the resulting Model from novel viewpoints the quality of the rendered image depends strongly on how close the nearest training camera angles are. This makes the novel view synthesis is comparable to a 3D interpolation.\cite{kerbl3Dgaussians}\\
+Subsequently if a part of the scene is not sufficiently covered in the original images holes or artifacts may appear in the scene for which no novel views can be synthesized due to lack of gaussians in the area (\ref{fig:hole}.\\
+\begin{figure}[b]
+\centering % zentriert alles in der Figure
+\includegraphics[width=0.6\linewidth]{Images/Chapter/hole.pdf} % externe Grafik laden
+\caption{A Gaussian Model with missing parts at the top}\label{fig:hole}
+\end{figure}
+Currently there is no method to improve an already optimized 3D-Gaussian Model beyond adding more cameras and resuming training.\\
+With the growing interest in using Gaussians as a 3D-Representation \cite{chen2024survey} it will become increasingly important to be able to work on Gaussians directly without referring back to the original images.\\
+A semantic understanding of Gaussians would enable tasks such as compositing different Gaussian Models (e.g. placing a smaller object in a larger scene), segmenting a larger scene into smaller individual Models and completing or repairing an incomplete or faulty scene.
 \section{Goals}
-This section describes my goal of trying to have an existing gaussian scene be understood by a transformer and then continued. Elaborating on the idea of getting a "good" latent space representation of gaussians.
+The goals of this work are as follows:\\
+\begin{itemize}
+    \item Encode an optimized but incomplete Gaussian Model with a transformer.
+    \item Train the transformer to infer where the scene is missing Gaussians.
+    \item Predict the missing geometries and visual data based on the rest of the scene.
+    \item Decode the predicted geometries and visual data back into Gaussians
+\end{itemize}
 
 \section{Challenges}
-This section will describe the non structural nature of gaussians and the difficulties of regressing them directly \cite{zou2023triplane}.
-It will also show a diagram of the attention layer and it's quadratic memory/computational complexity, describing the need to reduce the sequence length.
+Both encoding and decoding a Gaussian model are non-trivial tasks. For one the discrete, non-structural, and high-dimensional nature of 3D Gaussians make it difficult to predict their attributes directly \cite{zou2023triplane}.\\
+Additionally a Gaussian Model very quickly is comprised of hundreds of thousands of Gaussians. This makes it computationally unfeasible to directly input every Gaussian into a transformer architecture, due to the quadratic memory demands of the Attention Layers used within. \cite{beltagy2020longformer}\\
+Lastly the varying size of Gaussians leads to a non-homogeneous point cloud which makes it harder to sample from and understand the resulting geometries.\ref{fig:chairshrunk}
+\begin{figure}
+\centering % zentriert alles in der Figure
+\includegraphics[width=0.6\linewidth]{Images/Chapter/chairshrunk.pdf} % externe Grafik laden
+\caption{The chair from \ref{fig:gaussians} with scaled down Gaussians}\label{fig:chairshrunk}
+After scaling down the Gaussian the different sizes and subsequently densities of throughout the scene become more apparent.
+\end{figure}
 
 \chapter{Network Architecture}
 This chapter will start of with a diagram and description of the rough structure of the entire network.
@@ -68,7 +94,7 @@ This chapter will highlight the limitations currently present in both the archit
 \section{Improvements}
 This chapter will somewhat speculate on ways that the architecture could be improved and goals i have in mind for future work on this particular problem
 \section{Prospects}
-This chapter will talk about the things that would become possible if I can achieve a good latent space representation of Gaussian Scenes (such as style-transfer, etc).
+This chapter will talk about the things that would become possible if I can achieve a good latent space representation of Gaussian Scenes (such as style-transfer, etc). 
 
 
 
